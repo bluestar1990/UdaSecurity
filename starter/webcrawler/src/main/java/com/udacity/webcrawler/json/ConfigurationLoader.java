@@ -51,8 +51,7 @@ public final class ConfigurationLoader {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.disable(JsonParser.Feature.AUTO_CLOSE_SOURCE);
         try {
-            CrawlerConfiguration config = objectMapper.readValue(reader, CrawlerConfiguration.Builder.class).build();
-            return config;
+            return objectMapper.readValue(reader, CrawlerConfiguration.Builder.class).build();
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
