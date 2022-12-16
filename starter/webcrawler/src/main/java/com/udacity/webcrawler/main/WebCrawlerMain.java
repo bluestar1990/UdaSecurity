@@ -47,13 +47,17 @@ public final class WebCrawlerMain {
         if (StringUtils.isNotEmpty(resultPath)) {
             resultWriter.write(Paths.get(resultPath));
         } else {
-            resultWriter.write(new OutputStreamWriter(System.out));
+            try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(System.out)) {
+                resultWriter.write(outputStreamWriter);
+            }
         }
 
         if (StringUtils.isNotEmpty(config.getProfileOutputPath())) {
             profiler.writeData(Paths.get(config.getProfileOutputPath()));
         } else {
-            profiler.writeData(new OutputStreamWriter(System.out));
+            try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(System.out)) {
+                profiler.writeData(outputStreamWriter);
+            }
         }
     }
 
