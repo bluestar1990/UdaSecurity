@@ -103,10 +103,11 @@ final class ParallelWebCrawler implements WebCrawler {
                     return false;
                 }
             }
-            if (visitedUrls.contains(url)) {
+
+            if(!visitedUrls.add(url)) {
                 return false;
             }
-            visitedUrls.add(url);
+
             PageParser.Result result = parserFactory.get(url).parse();
             List<CrawlInternalTask> subtasks = new ArrayList<>();
             // This is my code . It is copied from SequentialWebCrawler
