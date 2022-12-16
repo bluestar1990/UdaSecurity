@@ -26,6 +26,8 @@ final class WordCounts {
     static Map<String, Integer> sort(Map<String, Integer> wordCounts, int popularWordCount) {
 
         // TODO: Reimplement this method using only the Stream API and lambdas and/or method references.
+        // This is no code.
+        // Here is the code that anyone can create it
         WordCountComparator comparator = new WordCountComparator();
         return wordCounts.entrySet()
                 .stream()

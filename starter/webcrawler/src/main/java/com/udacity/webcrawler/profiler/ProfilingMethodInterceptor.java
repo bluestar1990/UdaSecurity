@@ -1,7 +1,5 @@
 package com.udacity.webcrawler.profiler;
 
-import org.apache.commons.lang3.BooleanUtils;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -37,19 +35,19 @@ final class ProfilingMethodInterceptor implements InvocationHandler {
         //       invoke the method using the object that is being profiled. Finally, for profiled
         //       methods, the interceptor should record how long the method call took, using the
         //       ProfilingState methods.
-        Object invoked;
         boolean profiled = Objects.nonNull(method.getAnnotation(Profiled.class));
-        Instant start = BooleanUtils.isTrue(profiled) ? clock.instant() : null;
+        Instant start = clock.instant();
         try {
-            invoked = method.invoke(delegate, args);
-        } catch (InvocationTargetException ex) {
-            throw ex.getTargetException();
+            return method.invoke(delegate, args);
+        } catch (InvocationTargetException e) {
+            throw e.getTargetException();
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         } finally {
-            if (BooleanUtils.isTrue(profiled) && Objects.nonNull(start)) {
+            if (profiled) {
                 Duration duration = Duration.between(start, clock.instant());
                 state.record(delegate.getClass(), method, duration);
             }
         }
-        return invoked;
     }
 }
