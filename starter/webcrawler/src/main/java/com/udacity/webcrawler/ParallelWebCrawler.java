@@ -104,7 +104,7 @@ final class ParallelWebCrawler implements WebCrawler {
                 }
             }
 
-            if(!visitedUrls.add(url)) {
+            if (!visitedUrls.add(url)) {
                 return false;
             }
 
@@ -112,7 +112,7 @@ final class ParallelWebCrawler implements WebCrawler {
             List<CrawlInternalTask> subtasks = new ArrayList<>();
             // This is my code . It is copied from SequentialWebCrawler
             for (Map.Entry<String, Integer> e : result.getWordCounts().entrySet()) {
-                counts.put(e.getKey(), counts.containsKey(e.getKey()) ? e.getValue() + counts.get(e.getKey()) : e.getValue());
+                counts.compute(e.getKey(), (k, v) -> (Objects.nonNull(v)) ? e.getValue() + counts.get(e.getKey()) : e.getValue());
             }
             for (String link : result.getLinks()) {
                 subtasks.add(new CrawlInternalTask(link, deadline, maxDepth - 1, counts, visitedUrls));
