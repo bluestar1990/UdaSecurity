@@ -5,5 +5,5 @@ module com.udacity.catpoint.security {
     requires guava;
     requires java.prefs;
     requires com.google.gson;
-
+    opens com.udacity.catpoint.security.data to com.google.gson;
 }
