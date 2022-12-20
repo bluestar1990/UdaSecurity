@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="image-service" />
+        <module name="security-service" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="catpoint-parent" target="18" />
+      <module name="image-service" target="18" />
+      <module name="security-service" target="18" />
+      <module name="sercurity-service" target="1.7" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
