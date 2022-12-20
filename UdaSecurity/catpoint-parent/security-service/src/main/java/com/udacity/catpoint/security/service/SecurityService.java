@@ -11,8 +11,8 @@ import com.udacity.catpoint.security.application.StatusListener;
 import com.udacity.catpoint.security.data.SecurityRepository;
 
 import java.awt.image.BufferedImage;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Service that receives information about changes to the security system. Responsible for
@@ -26,6 +26,7 @@ public class SecurityService {
     private ImageService imageService;
     private SecurityRepository securityRepository;
     private Set<StatusListener> statusListeners = new HashSet<>();
+    boolean isCat = false;
 
     public SecurityService(SecurityRepository securityRepository, ImageService imageService) {
         this.securityRepository = securityRepository;
@@ -39,9 +40,22 @@ public class SecurityService {
      * @param armingStatus
      */
     public void setArmingStatus(ArmingStatus armingStatus) {
+        if(this.isCat && armingStatus == ArmingStatus.ARMED_HOME) {
+            setAlarmStatus(AlarmStatus.ALARM);
+        }
         if (armingStatus == ArmingStatus.DISARMED) {
             setAlarmStatus(AlarmStatus.NO_ALARM);
+        } else {
+            ConcurrentSkipListSet<Sensor> sensors = new ConcurrentSkipListSet<>(getSensors());
+            sensors.forEach(sensor -> {
+                if (sensor.getActive()) {
+                    sensor.setActive(false);
+                    securityRepository.updateSensor(sensor);
+                }
+            });
+            statusListeners.forEach(s -> s.sensorStatusChanged());
         }
+
         securityRepository.setArmingStatus(armingStatus);
     }
 
@@ -52,6 +66,9 @@ public class SecurityService {
      * @param cat True if a cat is detected, otherwise false.
      */
     private void catDetected(Boolean cat) {
+        if (Objects.nonNull(cat)) {
+            this.isCat = cat;
+        }
         if (cat && getArmingStatus() == ArmingStatus.ARMED_HOME) {
             setAlarmStatus(AlarmStatus.ALARM);
         } else {
@@ -103,7 +120,13 @@ public class SecurityService {
     private void handleSensorDeactivated() {
         switch (securityRepository.getAlarmStatus()) {
             case PENDING_ALARM -> setAlarmStatus(AlarmStatus.NO_ALARM);
-            case ALARM -> setAlarmStatus(AlarmStatus.PENDING_ALARM);
+            case ALARM -> {
+                Set<Sensor> sensors = securityRepository.getSensors();
+                long countActiveSensor = sensors.stream().filter(s -> s.getActive()).count();
+                if (countActiveSensor == 1) {
+                    setAlarmStatus(AlarmStatus.PENDING_ALARM);
+                }
+            }
         }
     }
 

@@ -10,14 +10,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: com.miglayout:miglayout:3.7.4" level="project" />
-    <orderEntry type="library" name="Maven: com.google.guava:guava:13.0-rc1" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.10" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:2.0.6" level="project" />
     <orderEntry type="library" name="Maven: software.amazon.awssdk:auth:2.18.41" level="project" />
     <orderEntry type="library" name="Maven: software.amazon.awssdk:annotations:2.18.41" level="project" />
     <orderEntry type="library" name="Maven: software.amazon.awssdk:utils:2.18.41" level="project" />
     <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.30" level="project" />
     <orderEntry type="library" name="Maven: software.amazon.awssdk:sdk-core:2.18.41" level="project" />
     <orderEntry type="library" name="Maven: software.amazon.awssdk:regions:2.18.41" level="project" />
     <orderEntry type="library" name="Maven: software.amazon.awssdk:profiles:2.18.41" level="project" />

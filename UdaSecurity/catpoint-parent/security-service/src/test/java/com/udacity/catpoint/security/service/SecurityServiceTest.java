@@ -1,6 +1,7 @@
 package com.udacity.catpoint.security.service;
 
 import com.udacity.catpoint.image.service.ImageService;
+import com.udacity.catpoint.security.application.StatusListener;
 import com.udacity.catpoint.security.data.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +30,9 @@ public class SecurityServiceTest {
     @Mock
     private SecurityRepository securityRepository;
 
+    @Mock
+    private StatusListener statusListener;
+
     private Sensor sensor;
     private static String sensorName;
 
@@ -48,15 +52,15 @@ public class SecurityServiceTest {
         sensorName = "sensorName";
         bufferedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
         sensors = new HashSet<>();
-        Sensor sensor1 = new Sensor("Sensor1" , SensorType.DOOR);
+        Sensor sensor1 = new Sensor("Sensor1", SensorType.DOOR);
         sensor1.setActive(Boolean.TRUE);
         sensor1.setSensorId(UUID.randomUUID());
         sensors.add(sensor1);
-        Sensor sensor2 = new Sensor("Sensor2" , SensorType.DOOR);
+        Sensor sensor2 = new Sensor("Sensor2", SensorType.DOOR);
         sensor2.setActive(Boolean.TRUE);
         sensor2.setSensorId(UUID.randomUUID());
         sensors.add(sensor2);
-        Sensor sensor3 = new Sensor("Sensor3" , SensorType.DOOR);
+        Sensor sensor3 = new Sensor("Sensor3", SensorType.DOOR);
         sensor3.setActive(Boolean.TRUE);
         sensor3.setSensorId(UUID.randomUUID());
         sensors.add(sensor3);
@@ -144,6 +148,19 @@ public class SecurityServiceTest {
     @ParameterizedTest
     @EnumSource(value = ArmingStatus.class, names = {"ARMED_HOME", "ARMED_AWAY"})
     void ifTheSystemIsArmed_ChangAllSensorStatusToInActive(ArmingStatus armingStatus) {
+        sensors = new HashSet<>();
+        Sensor sensor1 = new Sensor("Sensor1", SensorType.DOOR);
+        sensor1.setActive(Boolean.TRUE);
+        sensor1.setSensorId(UUID.randomUUID());
+        sensors.add(sensor1);
+        Sensor sensor2 = new Sensor("Sensor2", SensorType.DOOR);
+        sensor2.setActive(Boolean.TRUE);
+        sensor2.setSensorId(UUID.randomUUID());
+        sensors.add(sensor2);
+        Sensor sensor3 = new Sensor("Sensor3", SensorType.DOOR);
+        sensor3.setActive(Boolean.TRUE);
+        sensor3.setSensorId(UUID.randomUUID());
+        sensors.add(sensor3);
         securityService.setArmingStatus(armingStatus);
         Mockito.when(securityRepository.getSensors()).thenReturn(sensors);
         Set<Sensor> result = securityService.getSensors();
@@ -169,5 +186,37 @@ public class SecurityServiceTest {
         sensor.setActive(Boolean.TRUE);
         securityService.changeSensorActivationStatus(sensor, Boolean.FALSE);
         Mockito.verify(securityRepository, times(1)).setAlarmStatus(AlarmStatus.NO_ALARM);
+    }
+
+    @Test
+    @DisplayName("If the image service identifies an image containing a cat while the system is armed-home, put the system into alarm status..")
+    void ifTheImageServiceIdentifiesAnImageContainingACatWhileTheSystemIsArmedHome_putTheSystemIntoAlarmStatus2() {
+        securityService.isCat = true;
+        securityService.setArmingStatus(ArmingStatus.ARMED_HOME);
+        Mockito.verify(securityRepository, times(1)).setAlarmStatus(AlarmStatus.ALARM);
+    }
+
+    @Test
+    @DisplayName("Update all sensor status to inactive when change from DisArmed To Armed At Home ")
+    void ifUserChangeDisArmedToArmedAtHomeFromTo_updateAllSensorStatusToInactive(){
+        securityService.isCat = false;
+        Mockito.when(securityRepository.getSensors()).thenReturn(sensors);
+        securityService.setArmingStatus(ArmingStatus.ARMED_HOME);
+        Set<Sensor> result = securityService.getSensors();
+        result.forEach(r -> {
+            Assertions.assertFalse(r.getActive());
+        });
+    }
+
+    @Test
+    @DisplayName("add Status Listener")
+    void addStatusListener() {
+        securityService.addStatusListener(statusListener);
+    }
+
+    @Test
+    @DisplayName("remove Status Listener")
+    void removeStatusListener() {
+        securityService.removeStatusListener(statusListener);
     }
 }
